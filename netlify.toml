@@ -1,0 +1,37 @@
+# Netlify single-deploy setup (Option A): the existing Express app runs inside
+# a Netlify Function, so pages, statics and /api/* are served together.
+[build]
+  command = "npm install"
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  # No engines field in package.json; pin the Functions runtime to Node 20 (LTS).
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express", "@supabase/supabase-js", "dotenv", "serverless-http"]
+
+# API always runs through Express, never as static files.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+  force = true
+
+# Landing must serve the PRO reference page from Express (bienvenido), not the
+# orphan index.html that Netlify would otherwise serve statically at /.
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/server"
+  status = 200
+  force = true
+
+# Every other page has no static file, so it falls through to Express.
+# Existing static assets (design.css, responsive.css, screen folders) are still
+# served directly by the CDN; Express also serves them as a fallback.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200

@@ -1,0 +1,135 @@
+/* Shared responsive overrides for Horas Sociales static screens.
+ * Loaded after all inline styles via <link rel="stylesheet" href="/responsive.css">.
+ * Only adds fluid behavior; it never resets existing design tokens.
+ */
+
+/* Fluid media: images scale down, decorative SVGs keep their own sizing. */
+img,
+video,
+canvas,
+picture {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent horizontal overflow from fixed-width exports. */
+html,
+body {
+  overflow-x: hidden;
+}
+
+div,
+section,
+header,
+footer,
+main,
+nav,
+aside {
+  max-width: 100%;
+}
+
+/* Flex and grid children can shrink instead of forcing overflow. */
+div,
+section,
+header,
+footer,
+main {
+  min-width: 0;
+}
+
+/* Fluid typography scale. */
+h1 {
+  font-size: clamp(1.5rem, 1.1rem + 2vw, 2.5rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: clamp(1.05rem, 0.95rem + 1vw, 1.5rem);
+  line-height: 1.25;
+}
+
+p,
+li,
+a,
+button,
+input,
+select,
+textarea,
+label {
+  font-size: clamp(0.875rem, 0.8rem + 0.5vw, 1rem);
+}
+
+/* Tables scroll horizontally instead of breaking the layout. */
+table {
+  max-width: 100%;
+}
+
+div:has(> table) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Small phones: tighten padding, stack toolbars, keep tap targets usable. */
+@media (max-width: 360px) {
+  .wrap,
+  main,
+  section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  header {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Tablets: allow flex rows to wrap and grids to reflow. */
+@media (max-width: 768px) {
+  header,
+  nav {
+    flex-wrap: wrap;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  iframe,
+  embed,
+  object {
+    max-width: 100%;
+  }
+}
+
+/* Desktop: constrain wide pages to a readable measure. */
+@media (min-width: 1024px) {
+  .wrap,
+  main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Large desktop: cap full-bleed exports without changing mobile behavior. */
+@media (min-width: 1280px) {
+  .wrap {
+    max-width: min(1120px, 92vw);
+  }
+}

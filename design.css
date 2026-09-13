@@ -1,0 +1,254 @@
+/* Shared reference design tokens for Horas Sociales (HORASOCIAL PRO look).
+ * Bundles the visual identity observed on the reference deploy so any local
+ * screen renders the same without depending on Vercel.
+ * Loaded via <link rel="stylesheet" href="/design.css"> before /responsive.css
+ * so fluid overrides keep winning. This file never resets responsive.css.
+ *
+ * Remote assets intentionally kept remote (not redistributed):
+ * - Logo: https://lh3.googleusercontent.com/aida-public/... (googleusercontent)
+ * - Fonts: Google Fonts (Inter, Plus Jakarta Sans, Material Symbols Outlined)
+ * - Compiled per-screen CSS stays local (e.g. /bienvenido_a_horasocial_pro_1/style.css)
+ */
+
+:root {
+  /* Brand palette (from tailwind.config.js + compiled reference CSS). */
+  --hs-surface: #f7f9fb;
+  --hs-on-surface: #191c1e;
+  --hs-on-surface-variant: #45464d;
+  --hs-primary-container: #131b2e;
+  --hs-on-primary: #ffffff;
+  --hs-secondary: #006591;
+  --hs-secondary-container: #39b8fd;
+  --hs-outline: #76777d;
+  --hs-outline-variant: #c6c6cd;
+  --hs-flow-1: #cde9ff;
+  --hs-flow-2: #9fd4ff;
+  --hs-flow-3: #5fb4f7;
+  --hs-flow-4: #7dbfc8;
+
+  /* Spacing scale (reference tokens). */
+  --hs-xs: 4px;
+  --hs-sm: 8px;
+  --hs-md: 16px;
+  --hs-lg: 24px;
+  --hs-xl: 32px;
+  --hs-margin-mobile: 16px;
+  --hs-margin-desktop: 48px;
+
+  /* Shape + type. */
+  --hs-radius-lg: 1rem;
+  --hs-font-body: "Inter", system-ui, sans-serif;
+  --hs-font-headline: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+}
+
+/* Base canvas matching the reference landing. */
+body {
+  font-family: var(--hs-font-body);
+  background-color: var(--hs-surface);
+  color: var(--hs-on-surface);
+  margin: 0;
+}
+
+/* Headline scale matching reference hero. */
+h1,
+.hero h2 {
+  font-family: var(--hs-font-headline);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* Reference decorative layers (mirrors the inline <style> in code.html
+ * so screens without that block still get the same atmosphere). */
+.bg-pattern {
+  background-color: #ffffff;
+  position: relative;
+}
+
+.floating-icon {
+  position: absolute;
+  opacity: 0.03;
+  user-select: none;
+  pointer-events: none;
+}
+
+.content-layer {
+  position: relative;
+  z-index: 1;
+}
+
+.flow-field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30%;
+  height: 40%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.flow-field svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.flow-field .wf-l {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-width: 0.9;
+}
+
+.btn-glow:active {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+@keyframes hs-float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.animate-float {
+  animation: hs-float 6s ease-in-out infinite;
+}
+
+@keyframes hs-flow-drift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(9px, -16px); }
+  45% { transform: translate(19px, -6px); }
+  70% { transform: translate(11px, 6px); }
+}
+
+.wiggle {
+  animation: hs-flow-drift 38s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Fallback mapping for the root index.html orphan screen.
+ * index.html references assets/css/style.css and assets/js/app.js which do
+ * not exist in the repo; these rules give its existing class names the
+ * reference look until that screen is migrated to the shared template. */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hs-md);
+  padding: var(--hs-md) var(--hs-margin-mobile);
+  background-color: #ffffff;
+  color: var(--hs-primary-container);
+}
+
+.site-header h1 {
+  font-family: var(--hs-font-headline);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.nav ul {
+  display: flex;
+  gap: var(--hs-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  color: var(--hs-on-surface-variant);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: var(--hs-secondary);
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--hs-xl) var(--hs-margin-mobile);
+  text-align: center;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hs-md);
+  max-width: 32rem;
+}
+
+.hero h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--hs-primary-container);
+  margin: 0;
+}
+
+.hero p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--hs-on-surface-variant);
+  opacity: 0.8;
+  margin: 0;
+  max-width: 280px;
+}
+
+.cta-btn {
+  width: 100%;
+  max-width: 28rem;
+  padding: var(--hs-md) var(--hs-xl);
+  border: 0;
+  border-radius: var(--hs-radius-lg);
+  background-color: var(--hs-primary-container);
+  color: var(--hs-on-primary);
+  font-family: var(--hs-font-headline);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(19, 27, 46, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.cta-btn:hover {
+  transform: scale(1.02);
+}
+
+.cta-btn:active {
+  transform: scale(0.95);
+}
+
+.stats {
+  width: 100%;
+  max-width: 28rem;
+  margin-top: var(--hs-xl);
+}
+
+.stats-grid {
+  display: grid;
+  gap: var(--hs-md);
+}
+
+.site-footer {
+  text-align: center;
+  padding: var(--hs-lg) var(--hs-margin-mobile);
+  color: var(--hs-outline);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .site-header,
+  .main-content {
+    padding-left: var(--hs-margin-desktop);
+    padding-right: var(--hs-margin-desktop);
+  }
+
+  .hero h2 {
+    font-size: 32px;
+  }
+}

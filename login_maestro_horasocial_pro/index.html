@@ -364,6 +364,21 @@ function togglePassword() {
 }
 
 document.getElementById('loginForm').addEventListener('submit', (e) => {
+  // First signup: mark the account as new so the dashboard renders the
+  // fresh-user state (?new=1 / stored flag consumed by new-user.js).
+  try {
+    if (!localStorage.getItem('horasocial_has_account')) {
+      localStorage.setItem('horasocial_has_account', '1');
+      localStorage.setItem('horasocial_new_user', '1');
+      if (location.protocol === 'file:') {
+        e.preventDefault();
+        location.href = '../dashboard_maestro_horasocial_pro/index.html?new=1';
+        return;
+      }
+      e.target.action += '?new=1';
+      return;
+    }
+  } catch (err) {}
   if (location.protocol === 'file:') {
     e.preventDefault();
     location.href = '../dashboard_maestro_horasocial_pro/index.html';

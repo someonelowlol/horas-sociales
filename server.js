@@ -9,6 +9,16 @@ const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 const fs = require('fs');
 
+// Single source of truth for every static file served by this app.
+// Locally (and on Vercel) the screens sit next to this file, so the root is
+// __dirname. Inside a Netlify Function the bundled code runs from
+// /var/task/netlify/functions, two levels below the deployed repo root, so
+// the root climbs back up to /var/task. Every express.static and
+// res.sendFile below resolves against STATIC_ROOT — never __dirname directly.
+const STATIC_ROOT = (process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME)
+    ? path.join(__dirname, '..', '..')
+    : __dirname;
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -23,8 +33,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(path.join(__dirname), { index: false }));
-app.use('/stitch', express.static(path.join(__dirname, 'stitch_horasocial_pro_landing_page')));
+app.use(express.static(path.join(STATIC_ROOT), { index: false }));
+app.use('/stitch', express.static(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page')));
 
 // Supabase client. Local JSON files are used only when env vars are missing.
 // Never log or expose key values.
@@ -40,7 +50,7 @@ if (supabaseConfigured) {
     console.log('Supabase not configured, using local mode');
 }
 
-const SOLICITUDES_FILE = path.join(__dirname, 'solicitudes_recuperacion.json');
+const SOLICITUDES_FILE = path.join(STATIC_ROOT, 'solicitudes_recuperacion.json');
 
 function getLocalRequests() {
     try {
@@ -62,7 +72,7 @@ function saveLocalRequests(requests) {
     }
 }
 
-const SOLICITUDES_MAESTROS_FILE = path.join(__dirname, 'solicitudes_recuperacion_maestros.json');
+const SOLICITUDES_MAESTROS_FILE = path.join(STATIC_ROOT, 'solicitudes_recuperacion_maestros.json');
 
 function getLocalMaestroRequests() {
     try {
@@ -84,7 +94,7 @@ function saveLocalMaestroRequests(requests) {
     }
 }
 
-const SOLICITUDES_ADMINISTRADORES_FILE = path.join(__dirname, 'solicitudes_recuperacion_administradores.json');
+const SOLICITUDES_ADMINISTRADORES_FILE = path.join(STATIC_ROOT, 'solicitudes_recuperacion_administradores.json');
 
 function getLocalAdminRequests() {
     try {
@@ -522,101 +532,101 @@ app.post('/api/login-administrador', (req, res) => {
 // ==========================================
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'bienvenido_a_horasocial_pro_1', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'bienvenido_a_horasocial_pro_1', 'code.html'));
 });
 
 app.get('/seleccion-rol', (req, res) => {
-    res.sendFile(path.join(__dirname, 'selecci_n_de_rol_distribuci_n_expandida_vertical', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'selecci_n_de_rol_distribuci_n_expandida_vertical', 'code.html'));
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'login_estudiante_distribuci_n_centrada_y_logo_optimizado_2', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'login_estudiante_distribuci_n_centrada_y_logo_optimizado_2', 'code.html'));
 });
 
 app.get('/recuperar-contrasena', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'recuperar_contrasena_estudiante', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'recuperar_contrasena_estudiante', 'code.html'));
 });
 
 app.get('/profesor/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'login_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/profesor/recuperar-contrasena', (req, res) => {
-    res.sendFile(path.join(__dirname, 'recuperar_contrasena_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'recuperar_contrasena_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/admin/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_administrador_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'login_administrador_horasocial_pro', 'index.html'));
 });
 
 app.get('/admin/recuperar-contrasena', (req, res) => {
-    res.sendFile(path.join(__dirname, 'recuperar_contrasena_administrador_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'recuperar_contrasena_administrador_horasocial_pro', 'index.html'));
 });
 
 // Legacy admin login alias (kept for bookmarks and existing links).
 app.get('/login_administrador', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_administrador_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'login_administrador_horasocial_pro', 'index.html'));
 });
 
 app.get('/sobre', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'sobre_horasocial_pro_identidad_y_prop_sito', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'sobre_horasocial_pro_identidad_y_prop_sito', 'code.html'));
 });
 
 app.get('/estudiante/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_estudiante_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'dashboard_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/estudiante/agenda', (req, res) => {
-    res.sendFile(path.join(__dirname, 'agenda_estudiante_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'agenda_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/estudiante/registro', (req, res) => {
-    res.sendFile(path.join(__dirname, 'registro_estudiante_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'registro_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/estudiante/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mensajes_estudiante_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'mensajes_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/estudiante/chat', (req, res) => {
-    res.sendFile(path.join(__dirname, 'chat_maestro_estudiante_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'chat_maestro_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/maestro/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'dashboard_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/maestro/estudiantes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'gestion_estudiantes_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'gestion_estudiantes_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/maestro/tecnico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'gestion_tecnica_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'gestion_tecnica_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/maestro/chat', (req, res) => {
-  res.sendFile(path.join(__dirname, 'chat_maestro_horasocial_pro', 'index.html'));
+  res.sendFile(path.join(STATIC_ROOT, 'chat_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/maestro/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mensajes_maestro_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'mensajes_maestro_horasocial_pro', 'index.html'));
 });
 
 app.get('/admin/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_administrador_horasocial_pro', 'index.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'dashboard_administrador_horasocial_pro', 'index.html'));
 });
 
 app.get('/admin/docentes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'coordinaci_n_y_ajuste_de_docentes_admin', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'coordinaci_n_y_ajuste_de_docentes_admin', 'code.html'));
 });
 
 app.get('/admin/alertas', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'control_de_estudiantes_y_alertas_admin_versi_n_corregida', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'control_de_estudiantes_y_alertas_admin_versi_n_corregida', 'code.html'));
 });
 
 // Admin messages screen (Stitch _2 layout).
 app.get('/admin/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'mensajer_a_y_canales_admin_horasocial_pro_2', 'code.html'));
+    res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'mensajer_a_y_canales_admin_horasocial_pro_2', 'code.html'));
 });
 
 // Only listen on long-lived hosts. Serverless platforms (Vercel, Netlify

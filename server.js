@@ -5,6 +5,7 @@ try {
 }
 
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 const fs = require('fs');
@@ -113,6 +114,157 @@ function saveLocalAdminRequests(requests) {
         fs.writeFileSync(SOLICITUDES_ADMINISTRADORES_FILE, JSON.stringify(requests, null, 2), 'utf8');
     } catch (err) {
         console.error('Error writing local admin file:', err.message);
+    }
+}
+
+// Local user store (local mode only, mirrors the recovery-request pattern).
+// Runtime file, never committed. Supabase is the source of truth when env is set.
+const USUARIOS_FILE = path.join(STATIC_ROOT, 'usuarios.json');
+
+function normalizeUsuario(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function getLocalUsers() {
+    try {
+        if (fs.existsSync(USUARIOS_FILE)) {
+            const data = fs.readFileSync(USUARIOS_FILE, 'utf8');
+            return JSON.parse(data || '[]');
+        }
+    } catch (err) {
+        console.error('Error reading local users file:', err.message);
+    }
+    return [];
+}
+
+function saveLocalUsers(users) {
+    try {
+        fs.writeFileSync(USUARIOS_FILE, JSON.stringify(users, null, 2), 'utf8');
+    } catch (err) {
+        console.error('Error writing local users file:', err.message);
+    }
+}
+
+// User accounts: one `usuarios` table for every role (see SUPABASE_SETUP.sql).
+// Signup checks the database first: existing (rol, usuario) -> 409
+// "usuario ya registrado", otherwise hashes with bcrypt and inserts -> 201.
+// Login validates the hash: bad credentials -> 401, ok -> redirect keeping
+// the ?new=1/?demo=1 flags via loginSuffix. Without Supabase env (local mode)
+// both keep the previous behavior (no validation, plain redirect).
+const SIGNUP_DASHBOARD = {
+    estudiante: '/estudiante/dashboard',
+    maestro: '/maestro/dashboard',
+    administrador: '/admin/dashboard',
+};
+
+function validateSignup(body) {
+    const usuario = normalizeUsuario(body.usuario || body.username);
+    const nombre = String(body.nombre || body.nombre_completo || '').trim();
+    const password = String(body.password || '');
+    if (!usuario || !nombre || !password) {
+        return { error: 'Todos los campos son obligatorios' };
+    }
+    if (password.length < 6) {
+        return { error: 'La contraseña debe tener al menos 6 caracteres' };
+    }
+    return { usuario, nombre, password };
+}
+
+function sendSignupSuccess(req, res, redirect) {
+    // fetch clients (signup pages) get the JSON contract; classic form posts
+    // asking for HTML keep the POST->redirect navigation instead.
+    const accept = String(req.headers.accept || '');
+    if (accept.includes('text/html') && !accept.includes('application/json')) {
+        return res.redirect(302, redirect);
+    }
+    return res.status(201).json({ success: true, message: 'Cuenta creada', redirect });
+}
+
+async function handleSignup(rol, req, res) {
+    const valid = validateSignup(req.body || {});
+    if (valid.error) return res.status(400).json({ error: valid.error });
+    const { usuario, nombre, password } = valid;
+    const redirect = SIGNUP_DASHBOARD[rol] + '?new=1';
+
+    const saveToLocal = async () => {
+        const users = getLocalUsers();
+        if (users.some((u) => u.rol === rol && normalizeUsuario(u.usuario) === usuario)) {
+            return res.status(409).json({ error: 'usuario ya registrado' });
+        }
+        const password_hash = await bcrypt.hash(password, 10);
+        const newUser = {
+            id: Date.now(),
+            rol,
+            usuario,
+            nombre_completo: nombre,
+            password_hash,
+            fecha_registro: new Date().toISOString(),
+        };
+        users.push(newUser);
+        saveLocalUsers(users);
+        return sendSignupSuccess(req, res, redirect);
+    };
+
+    if (supabaseConfigured && supabase) {
+        try {
+            const { data: existing, error: selectError } = await supabase
+                .from('usuarios')
+                .select('id')
+                .eq('rol', rol)
+                .eq('usuario', usuario)
+                .limit(1);
+            if (selectError) throw selectError;
+            if (existing && existing.length > 0) {
+                return res.status(409).json({ error: 'usuario ya registrado' });
+            }
+            const password_hash = await bcrypt.hash(password, 10);
+            const { error: insertError } = await supabase
+                .from('usuarios')
+                .insert([{ rol, usuario, nombre_completo: nombre, password_hash }]);
+            if (insertError) throw insertError;
+            return sendSignupSuccess(req, res, redirect);
+        } catch (err) {
+            // Table missing (SQL not applied yet) or connectivity issue:
+            // fall back to the local store instead of bricking signup.
+            console.error('Supabase signup failed, falling back to local:', err.message);
+            return saveToLocal();
+        }
+    }
+    return saveToLocal();
+}
+
+app.post('/api/signup-estudiante', (req, res) => handleSignup('estudiante', req, res));
+app.post('/api/signup-maestro', (req, res) => handleSignup('maestro', req, res));
+app.post('/api/signup-administrador', (req, res) => handleSignup('administrador', req, res));
+
+async function handleLogin(rol, req, res, dashboardPath) {
+    const { username, password } = req.body || {};
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
+    }
+    // Local mode (no env): previous behavior — redirect without validation.
+    if (!supabaseConfigured || !supabase) {
+        return res.redirect(302, dashboardPath + loginSuffix(req));
+    }
+    try {
+        const { data, error } = await supabase
+            .from('usuarios')
+            .select('password_hash')
+            .eq('rol', rol)
+            .eq('usuario', normalizeUsuario(username))
+            .limit(1);
+        if (error) throw error;
+        const row = data && data[0];
+        const ok = row && await bcrypt.compare(String(password), row.password_hash);
+        if (!ok) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
+        return res.redirect(302, dashboardPath + loginSuffix(req));
+    } catch (err) {
+        // Table missing or DB unreachable: keep the previous redirect behavior
+        // so logins keep working before the new SQL is applied.
+        console.error('Supabase login check failed, falling back to redirect:', err.message);
+        return res.redirect(302, dashboardPath + loginSuffix(req));
     }
 }
 
@@ -510,31 +662,13 @@ function loginSuffix(req) {
     return '';
 }
 
-app.post('/api/login-estudiante', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
-    }
-    res.redirect(302, '/estudiante/dashboard' + loginSuffix(req));
-});
+app.post('/api/login-estudiante', (req, res) => handleLogin('estudiante', req, res, '/estudiante/dashboard'));
 
 // Teacher login: same as the student one, POST->redirect navigation lets
 // the browser offer to save the password.
-app.post('/api/login-maestro', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
-    }
-    res.redirect(302, '/maestro/dashboard' + loginSuffix(req));
-});
+app.post('/api/login-maestro', (req, res) => handleLogin('maestro', req, res, '/maestro/dashboard'));
 
-app.post('/api/login-administrador', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
-    }
-    res.redirect(302, '/admin/dashboard' + loginSuffix(req));
-});
+app.post('/api/login-administrador', (req, res) => handleLogin('administrador', req, res, '/admin/dashboard'));
 
 // ==========================================
 // PAGE ROUTES (single source of truth — keep every page route in this table only)
@@ -556,6 +690,18 @@ app.get('/seleccion-rol', (req, res) => {
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(STATIC_ROOT, 'stitch_horasocial_pro_landing_page', 'login_estudiante_distribuci_n_centrada_y_logo_optimizado_2', 'code.html'));
+});
+
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(STATIC_ROOT, 'signup_estudiante_horasocial_pro', 'index.html'));
+});
+
+app.get('/profesor/signup', (req, res) => {
+    res.sendFile(path.join(STATIC_ROOT, 'signup_maestro_horasocial_pro', 'index.html'));
+});
+
+app.get('/admin/signup', (req, res) => {
+    res.sendFile(path.join(STATIC_ROOT, 'signup_administrador_horasocial_pro', 'index.html'));
 });
 
 app.get('/recuperar-contrasena', (req, res) => {

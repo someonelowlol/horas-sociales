@@ -3,3 +3,6 @@ node_modules/
 *.log
 .vercel/
 **/screen.png
+# Local-mode runtime stores (never committed; Supabase is the source of truth).
+usuarios.json
+solicitudes_recuperacion*.json

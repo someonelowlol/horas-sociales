@@ -49,7 +49,7 @@ function getLocalRequests() {
             return JSON.parse(data || '[]');
         }
     } catch (err) {
-        console.error('Error leyendo archivo local:', err.message);
+        console.error('Error reading local file:', err.message);
     }
     return [];
 }
@@ -58,7 +58,7 @@ function saveLocalRequests(requests) {
     try {
         fs.writeFileSync(SOLICITUDES_FILE, JSON.stringify(requests, null, 2), 'utf8');
     } catch (err) {
-        console.error('Error escribiendo archivo local:', err.message);
+        console.error('Error writing local file:', err.message);
     }
 }
 
@@ -71,7 +71,7 @@ function getLocalMaestroRequests() {
             return JSON.parse(data || '[]');
         }
     } catch (err) {
-        console.error('Error leyendo archivo local maestros:', err.message);
+        console.error('Error reading local teacher file:', err.message);
     }
     return [];
 }
@@ -80,7 +80,7 @@ function saveLocalMaestroRequests(requests) {
     try {
         fs.writeFileSync(SOLICITUDES_MAESTROS_FILE, JSON.stringify(requests, null, 2), 'utf8');
     } catch (err) {
-        console.error('Error escribiendo archivo local maestros:', err.message);
+        console.error('Error writing local teacher file:', err.message);
     }
 }
 
@@ -93,7 +93,7 @@ function getLocalAdminRequests() {
             return JSON.parse(data || '[]');
         }
     } catch (err) {
-        console.error('Error leyendo archivo local administradores:', err.message);
+        console.error('Error reading local admin file:', err.message);
     }
     return [];
 }
@@ -102,7 +102,7 @@ function saveLocalAdminRequests(requests) {
     try {
         fs.writeFileSync(SOLICITUDES_ADMINISTRADORES_FILE, JSON.stringify(requests, null, 2), 'utf8');
     } catch (err) {
-        console.error('Error escribiendo archivo local administradores:', err.message);
+        console.error('Error writing local admin file:', err.message);
     }
 }
 
@@ -488,9 +488,9 @@ app.post('/api/rechazar-solicitud-administrador', async (req, res) => {
     return deleteRequestLocal();
 });
 
-// Ruta de ingreso desde el login de estudiante: valida que el usuario completó
-// el formulario y lo lleva al dashboard. La navegación real POST->redirect
-// permite que el navegador ofrezca guardar la contraseña.
+// Student login entry: validates that the user completed the form and
+// takes them to the dashboard. Real POST->redirect navigation lets the
+// browser offer to save the password.
 app.post('/api/login-estudiante', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -499,8 +499,8 @@ app.post('/api/login-estudiante', (req, res) => {
     res.redirect(302, '/estudiante/dashboard');
 });
 
-// Login de profesor: igual que el de estudiante, la navegación POST->redirect
-// permite que el navegador ofrezca guardar la contraseña.
+// Teacher login: same as the student one, POST->redirect navigation lets
+// the browser offer to save the password.
 app.post('/api/login-maestro', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -518,106 +518,7 @@ app.post('/api/login-administrador', (req, res) => {
 });
 
 // ==========================================
-// RUTAS DE PÁGINAS
-// ==========================================
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'bienvenido_a_horasocial_pro_1', 'code.html'));
-});
-
-app.get('/seleccion-rol', (req, res) => {
-    res.sendFile(path.join(__dirname, 'selecci_n_de_rol_distribuci_n_expandida_vertical', 'code.html'));
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'login_estudiante_distribuci_n_centrada_y_logo_optimizado_2', 'code.html'));
-});
-
-app.get('/profesor/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/profesor/recuperar-contrasena', (req, res) => {
-    res.sendFile(path.join(__dirname, 'recuperar_contrasena_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/admin/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_administrador_horasocial_pro', 'index.html'));
-});
-
-app.get('/admin/recuperar-contrasena', (req, res) => {
-    res.sendFile(path.join(__dirname, 'recuperar_contrasena_administrador_horasocial_pro', 'index.html'));
-});
-
-// ✅ RUTA LOGIN ADMINISTRADOR
-app.get('/login_administrador', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login_administrador_horasocial_pro', 'index.html'));
-});
-
-app.get('/sobre', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'sobre_horasocial_pro_identidad_y_prop_sito', 'code.html'));
-});
-
-app.get('/estudiante/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_estudiante_horasocial_pro', 'index.html'));
-});
-
-app.get('/estudiante/agenda', (req, res) => {
-    res.sendFile(path.join(__dirname, 'agenda_estudiante_horasocial_pro', 'index.html'));
-});
-
-app.get('/estudiante/registro', (req, res) => {
-    res.sendFile(path.join(__dirname, 'registro_estudiante_horasocial_pro', 'index.html'));
-});
-
-app.get('/estudiante/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mensajes_estudiante_horasocial_pro', 'index.html'));
-});
-
-app.get('/estudiante/chat', (req, res) => {
-    res.sendFile(path.join(__dirname, 'chat_maestro_estudiante_horasocial_pro', 'index.html'));
-});
-
-app.get('/maestro/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/maestro/estudiantes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'gestion_estudiantes_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/maestro/tecnico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'gestion_tecnica_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/maestro/chat', (req, res) => {
-  res.sendFile(path.join(__dirname, 'chat_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/maestro/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mensajes_maestro_horasocial_pro', 'index.html'));
-});
-
-app.get('/admin/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard_administrador_horasocial_pro', 'index.html'));
-});
-
-app.get('/admin/docentes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'coordinaci_n_y_ajuste_de_docentes_admin', 'code.html'));
-});
-
-app.get('/admin/alertas', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'control_de_estudiantes_y_alertas_admin_versi_n_corregida', 'code.html'));
-});
-
-// ✅ RUTA /admin/mensajes CORREGIDA - apunta a la carpeta correcta del admin
-app.get('/admin/mensajes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'mensajer_a_y_canales_admin_horasocial_pro_2', 'code.html'));
-});
-
-module.exports = app;
-// ==========================================
-// RUTAS DE PÁGINAS CORREGIDAS PARA VERCEL
+// PAGE ROUTES (single source of truth — keep every page route in this table only)
 // ==========================================
 
 app.get('/', (req, res) => {
@@ -652,6 +553,7 @@ app.get('/admin/recuperar-contrasena', (req, res) => {
     res.sendFile(path.join(__dirname, 'recuperar_contrasena_administrador_horasocial_pro', 'index.html'));
 });
 
+// Legacy admin login alias (kept for bookmarks and existing links).
 app.get('/login_administrador', (req, res) => {
     res.sendFile(path.join(__dirname, 'login_administrador_horasocial_pro', 'index.html'));
 });
@@ -712,11 +614,15 @@ app.get('/admin/alertas', (req, res) => {
     res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'control_de_estudiantes_y_alertas_admin_versi_n_corregida', 'code.html'));
 });
 
+// Admin messages screen (Stitch _2 layout).
 app.get('/admin/mensajes', (req, res) => {
     res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'mensajer_a_y_canales_admin_horasocial_pro_2', 'code.html'));
 });
+
 if (!process.env.VERCEL) {
     app.listen(PORT, () => {
-        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`Server running at http://localhost:${PORT}`);
     });
 }
+
+module.exports = app;

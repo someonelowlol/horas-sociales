@@ -619,7 +619,9 @@ app.get('/admin/mensajes', (req, res) => {
     res.sendFile(path.join(__dirname, 'stitch_horasocial_pro_landing_page', 'mensajer_a_y_canales_admin_horasocial_pro_2', 'code.html'));
 });
 
-if (!process.env.VERCEL) {
+// Only listen on long-lived hosts. Serverless platforms (Vercel, Netlify
+// Functions, AWS Lambda) import the app and expose it via a handler instead.
+if (!process.env.VERCEL && !process.env.NETLIFY && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
     app.listen(PORT, () => {
         console.log(`Server running at http://localhost:${PORT}`);
     });

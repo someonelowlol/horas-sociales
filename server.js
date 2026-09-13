@@ -500,13 +500,22 @@ app.post('/api/rechazar-solicitud-administrador', async (req, res) => {
 
 // Student login entry: validates that the user completed the form and
 // takes them to the dashboard. Real POST->redirect navigation lets the
-// browser offer to save the password.
+// browser offer to save the password. A ?new=1 / ?demo=1 query (set by the
+// login page on first signup) is preserved so the dashboard can render the
+// fresh-user state instead of sample data.
+function loginSuffix(req) {
+    if (req.query && req.query.new === '1') return '?new=1';
+    if (req.query && req.query.demo === '1') return '?demo=1';
+    if (req.body && (req.body.new_user === '1' || req.body.new_user === 1)) return '?new=1';
+    return '';
+}
+
 app.post('/api/login-estudiante', (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
     }
-    res.redirect(302, '/estudiante/dashboard');
+    res.redirect(302, '/estudiante/dashboard' + loginSuffix(req));
 });
 
 // Teacher login: same as the student one, POST->redirect navigation lets
@@ -516,7 +525,7 @@ app.post('/api/login-maestro', (req, res) => {
     if (!username || !password) {
         return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
     }
-    res.redirect(302, '/maestro/dashboard');
+    res.redirect(302, '/maestro/dashboard' + loginSuffix(req));
 });
 
 app.post('/api/login-administrador', (req, res) => {
@@ -524,7 +533,7 @@ app.post('/api/login-administrador', (req, res) => {
     if (!username || !password) {
         return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
     }
-    res.redirect(302, '/admin/dashboard');
+    res.redirect(302, '/admin/dashboard' + loginSuffix(req));
 });
 
 // ==========================================
@@ -533,6 +542,12 @@ app.post('/api/login-administrador', (req, res) => {
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(STATIC_ROOT, 'bienvenido_a_horasocial_pro_1', 'code.html'));
+});
+
+// Public demo: same student dashboard shell, client script renders the
+// fresh-user state when it sees ?demo=1 (see new-user.js).
+app.get('/demo', (req, res) => {
+    res.sendFile(path.join(STATIC_ROOT, 'dashboard_estudiante_horasocial_pro', 'index.html'));
 });
 
 app.get('/seleccion-rol', (req, res) => {

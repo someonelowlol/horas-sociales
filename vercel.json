@@ -35,6 +35,7 @@
   ],
   "routes": [
     { "src": "/", "destination": "/server.js" },
+    { "src": "/demo", "destination": "/server.js" },
     { "handle": "filesystem" },
     { "src": "/login", "destination": "/server.js" },
     { "src": "/recuperar-contrasena", "destination": "/server.js" },

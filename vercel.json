@@ -28,7 +28,8 @@
           "stitch_horasocial_pro_landing_page/coordinaci_n_y_ajuste_de_docentes_admin/**",
           "stitch_horasocial_pro_landing_page/control_de_estudiantes_y_alertas_admin_versi_n_corregida/**",
           "stitch_horasocial_pro_landing_page/mensajer_a_y_canales_admin_horasocial_pro_2/**",
-          "recuperar_contrasena_administrador_horasocial_pro/**"
+          "recuperar_contrasena_administrador_horasocial_pro/**",
+          "new-user.js"
         ]
       }
     }

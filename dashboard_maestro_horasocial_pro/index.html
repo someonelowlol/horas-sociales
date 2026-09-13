@@ -1170,5 +1170,8 @@
     renderReportes();
   })();
 </script>
+<!-- Fresh-user / demo state (?demo=1, ?new=1 or stored flag). -->
+<script src="/new-user.js"></script>
+<script>if (location.protocol === 'file:') { var hsFresh = document.createElement('script'); hsFresh.src = '../new-user.js'; document.head.appendChild(hsFresh); }</script>
 </body>
 </html>

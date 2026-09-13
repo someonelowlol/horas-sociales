@@ -79,6 +79,7 @@
             will-change: transform;
         }
     </style>
+  <link rel="stylesheet" href="/design.css">
   <link rel="stylesheet" href="/responsive.css">
 </head>
 <body class="bg-surface font-body-md text-on-surface overflow-hidden">
@@ -181,6 +182,8 @@
 <span class="relative z-10">Siguiente</span>
 <span class="relative z-10 material-symbols-outlined text-[20px]">arrow_forward</span>
 </button>
+<!-- Demo Button (secondary): opens the student dashboard in fresh-user state -->
+<a class="hs-demo-btn" href="/demo" onclick="goDemo(event)">Ver demo</a>
 <!-- Small Copyright/Version Info -->
 <div class="flex flex-col items-center space-y-xs">
 <span class="font-label-sm text-label-sm text-outline opacity-60">© 2024 HORASOCIAL PRO</span>
@@ -190,7 +193,16 @@
 </footer>
 </main>
 <!-- Micro-interaction Script -->
-<script>
+    <script>
+        // Demo entry: same dashboard shell, fresh-user state via query flag.
+        function goDemo(e) {
+            if (e) e.preventDefault();
+            try { localStorage.setItem('horasocial_demo', '1'); } catch (err) {}
+            var target = window.location.protocol === 'file:'
+                ? '../dashboard_estudiante_horasocial_pro/index.html?demo=1'
+                : '/demo?demo=1';
+            window.location.href = target;
+        }
         function handleNavigation() {
             // Visual feedback before navigating to the next screen
             const btn = document.querySelector('button');

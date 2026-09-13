@@ -252,3 +252,82 @@ h1,
     font-size: 32px;
   }
 }
+
+/* Secondary demo entry: sits next to the primary CTA without stealing focus. */
+.hs-demo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 28rem;
+  margin-top: 12px;
+  padding: 14px 24px;
+  border: 1.5px solid var(--hs-secondary-container);
+  border-radius: var(--hs-radius-lg);
+  background: #fff;
+  color: var(--hs-secondary);
+  font-family: var(--hs-font-headline);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.hs-demo-btn:hover {
+  background: #f0f9ff;
+  transform: scale(1.02);
+}
+
+.hs-demo-btn:active {
+  transform: scale(0.97);
+}
+
+/* Fresh-user welcome banner injected by new-user.js on dashboards. */
+.hs-welcome-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0f9ff;
+  border: 1.5px solid #bae6fd;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #0c4a6e;
+}
+
+.hs-welcome-banner b {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.hs-welcome-close {
+  flex: 0 0 auto;
+  margin-left: auto;
+  border: 1.5px solid #bae6fd;
+  background: #fff;
+  color: #0369a1;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hs-welcome-close:active {
+  transform: scale(0.96);
+}
+
+/* Empty-list placeholder used in fresh-user state ("sin registros"). */
+.hs-empty-note {
+  text-align: center;
+  padding: 18px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5b6b7c;
+}

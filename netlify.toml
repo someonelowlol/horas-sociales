@@ -1,20 +1,14 @@
-# Netlify single-deploy setup (Option A): the existing Express app runs inside
-# a Netlify Function, so pages, statics and /api/* are served together.
 [build]
   command = "npm install"
   publish = "."
   functions = "netlify/functions"
 
 [build.environment]
-  # No engines field in package.json; pin the Functions runtime to Node 20 (LTS).
   NODE_VERSION = "20"
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["express", "@supabase/supabase-js", "dotenv", "serverless-http"]
-  # Bundle every screen folder plus the shared assets so STATIC_ROOT can
-  # serve them from the deployed bundle root (/var/task). Each glob below
-  # was verified against the repo filesystem — no orphan entries.
+  external_node_modules = ["express", "@supabase/supabase-js", "dotenv", "serverless-http", "bcryptjs"]
   included_files = [
     "bienvenido_a_horasocial_pro_1/**",
     "selecci_n_de_rol_distribuci_n_expandida_vertical/**",
@@ -42,30 +36,108 @@
     "signup_estudiante_horasocial_pro/**",
     "signup_maestro_horasocial_pro/**",
     "signup_administrador_horasocial_pro/**",
+    "assets/**",
+    "recuperaciones_materias.json",
     "design.css",
     "responsive.css",
     "new-user.js",
-    "index.html"
+    "index.html",
+    "_redirects"
   ]
 
-# API always runs through Express, never as static files.
+# API always runs through Express
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
   force = true
 
-# Landing must serve the PRO reference page from Express (bienvenido), not the
-# orphan index.html that Netlify would otherwise serve statically at /.
+# Direct static routes for instant loading without function cold starts
 [[redirects]]
-  from = "/"
-  to = "/.netlify/functions/server"
+  from = "/maestro/estudiantes"
+  to = "/gestion_estudiantes_maestro_horasocial_pro/index.html"
   status = 200
   force = true
 
-# Every other page has no static file, so it falls through to Express.
-# Existing static assets (design.css, responsive.css, screen folders) are still
-# served directly by the CDN; Express also serves them as a fallback.
+[[redirects]]
+  from = "/maestro/dashboard"
+  to = "/dashboard_maestro_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/estudiante/dashboard"
+  to = "/dashboard_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/estudiante/recuperaciones"
+  to = "/dashboard_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/estudiante/agenda"
+  to = "/agenda_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/estudiante/registro"
+  to = "/registro_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/estudiante/mensajes"
+  to = "/mensajes_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/dashboard"
+  to = "/dashboard_administrador_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/alertas"
+  to = "/stitch_horasocial_pro_landing_page/control_de_estudiantes_y_alertas_admin_versi_n_corregida/code.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/seleccion-rol"
+  to = "/selecci_n_de_rol_distribuci_n_expandida_vertical/code.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/login"
+  to = "/stitch_horasocial_pro_landing_page/login_estudiante_distribuci_n_centrada_y_logo_optimizado_2/code.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/profesor/login"
+  to = "/login_maestro_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/login"
+  to = "/login_administrador_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/demo"
+  to = "/dashboard_estudiante_horasocial_pro/index.html"
+  status = 200
+  force = true
+
+# Fallback for remaining dynamic requests
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"

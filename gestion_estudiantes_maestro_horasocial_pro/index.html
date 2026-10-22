@@ -478,6 +478,7 @@
       <button class="chip" type="button" data-filtro="Apoyo Académico">Apoyo Académico</button>
       <button class="chip" type="button" data-filtro="Servicios Comunitarios">Servicios Comunitarios</button>
       <button class="chip" type="button" data-filtro="Excusas">Excusas</button>
+      <button class="chip" type="button" data-filtro="Recuperaciones">Con Recuperación</button>
     </div>
   </section>
 
@@ -753,6 +754,29 @@
       if (d) d.textContent = horasT;
     }
 
+    /* ---------- recuperaciones de materias ---------- */
+    var recuperacionesData = [];
+    function cargarRecuperacionesEstudiantes(){
+      fetch('/api/recuperaciones')
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if (Array.isArray(data)){
+            recuperacionesData = data;
+            renderList();
+          }
+        })
+        .catch(function(){});
+    }
+
+    function getRecuperacionesEstudiante(s){
+      return recuperacionesData.filter(function(r){
+        return (r.codigo && r.codigo === s.codigo) ||
+               (norm(r.estudiante_nombre) === norm(s.nombre)) ||
+               (norm(s.nombre).indexOf(norm(r.estudiante_nombre)) !== -1) ||
+               (norm(r.estudiante_nombre).indexOf(norm(s.nombre)) !== -1);
+      });
+    }
+
     /* ---------- filtros y lista ---------- */
     function iniciales(nombre){
       var p = nombre.split(' ');
@@ -761,7 +785,11 @@
     function filtrados(){
       var q = norm($('stSearch') ? $('stSearch').value : '');
       return est.filter(function(s){
-        var okF = filtroActual === 'Todas' || (filtroActual === 'Excusas' ? s.estado === 'Excusa' : s.brigada === filtroActual);
+        var recs = getRecuperacionesEstudiante(s);
+        var tieneRec = recs.some(function(r){ return r.estado === 'Pendiente' || r.estado === 'En revisión'; });
+        var okF = filtroActual === 'Todas' ||
+                  (filtroActual === 'Excusas' ? s.estado === 'Excusa' :
+                  (filtroActual === 'Recuperaciones' ? tieneRec : s.brigada === filtroActual));
         var okQ = !q || norm(s.nombre).indexOf(q) !== -1 || norm(s.codigo).indexOf(q) !== -1;
         return okF && okQ;
       });
@@ -776,6 +804,12 @@
       var html = '';
       data.forEach(function(s){
         var cls = clsBrigada(s.brigada), p = pct(s);
+        var recs = getRecuperacionesEstudiante(s);
+        var pendRecs = recs.filter(function(r){ return r.estado !== 'Aprobada'; });
+        var recBadge = pendRecs.length > 0
+          ? '<span class="s-chip" style="background:#fef3c7;color:#92400e;display:inline-flex;align-items:center;gap:3px;font-size:10px;"><span class="material-symbols-outlined" style="font-size:12px;">auto_stories</span>' + pendRecs.length + ' Nivelación' + (pendRecs.length > 1 ? 'es' : '') + '</span>'
+          : '';
+
         html += '<div class="s-row">' +
           '<div class="s-av ' + cls + '">' + esc(iniciales(s.nombre)) + '</div>' +
           '<div class="s-info">' +
@@ -783,7 +817,7 @@
             '<div class="s-bar"><div class="bar"><div class="bar-fill" style="width:' + p + '%"></div></div><span>' + s.horas + '/80 h · ' + p + '%</span></div>' +
           '</div>' +
           '<div class="s-side">' +
-            '<div class="s-tags"><span class="b-chip ' + cls + '">' + esc(s.brigada) + '</span>' + chipEstado(s) + '</div>' +
+            '<div class="s-tags"><span class="b-chip ' + cls + '">' + esc(s.brigada) + '</span>' + chipEstado(s) + recBadge + '</div>' +
             '<div class="s-btns">' +
               '<button class="btn-ico" type="button" data-ver="' + esc(s.codigo) + '" title="Ver perfil" aria-label="Ver perfil"><span class="material-symbols-outlined">visibility</span></button>' +
               '<button class="btn-ico accent" type="button" data-horas="' + esc(s.codigo) + '" title="Registrar horas" aria-label="Registrar horas"><span class="material-symbols-outlined">schedule</span></button>' +
@@ -831,6 +865,36 @@
         ? '<div class="exc-box"><p>Este estudiante tiene una excusa pendiente por validar. Al aprobarla, su estado pasará a Al día.</p>' +
           '<button class="vbtn" type="button" data-excusa="' + esc(s.codigo) + '"><span class="material-symbols-outlined">how_to_reg</span>Aprobar excusa</button></div>'
         : '';
+
+      var recs = getRecuperacionesEstudiante(s);
+      var recHtml = '';
+      if (recs.length > 0){
+        recHtml += '<div style="margin-top:14px;padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;">' +
+          '<div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--navy-900);margin-bottom:8px;display:flex;align-items:center;gap:6px;">' +
+            '<span class="material-symbols-outlined" style="font-size:18px;color:#0284c7;">auto_stories</span>' +
+            'Materias Pendientes y Nivelaciones (Requisito de Grado)' +
+          '</div>';
+        recs.forEach(function(r){
+          var stColor = r.estado === 'Aprobada' ? '#16a34a' : (r.estado === 'En revisión' ? '#0284c7' : '#ea580c');
+          var bgSt = r.estado === 'Aprobada' ? '#dcfce7' : (r.estado === 'En revisión' ? '#e0f2fe' : '#ffedd5');
+          recHtml += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:8px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+              '<b style="font-size:13px;color:var(--navy-900);">' + esc(r.materia) + '</b>' +
+              '<span style="font-size:10px;font-weight:800;background:' + bgSt + ';color:' + stColor + ';padding:3px 8px;border-radius:999px;">' + r.estado + '</span>' +
+            '</div>' +
+            '<div style="font-size:11.5px;color:var(--slate);margin-bottom:6px;">Nota previa: <b style="color:#dc2626;">' + (r.nota_definitiva || '2.4') + '</b> · Mínimo: 3.0</div>' +
+            (r.entrega_estudiante ? '<div style="font-size:11px;margin-bottom:6px;"><a href="' + (r.entrega_estudiante.enlace_archivo || '#') + '" target="_blank" style="color:#0284c7;font-weight:700;">Ver enlace de evidencias &rarr;</a></div>' : '') +
+            (r.estado !== 'Aprobada' ? '<button class="vbtn" style="padding:6px 10px;font-size:11px;width:100%;justify-content:center;margin-top:4px;" type="button" data-aprobar-rec="' + r.id + '"><span class="material-symbols-outlined" style="font-size:15px;">check_circle</span>Aprobar Nivelación de Asignatura</button>' : '<div style="font-size:11px;color:#16a34a;font-weight:700;">✓ Aprobada (Nota: ' + (r.nota_recuperacion || '3.5') + ')</div>') +
+          '</div>';
+        });
+        recHtml += '</div>';
+      } else {
+        recHtml = '<div style="margin-top:14px;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;color:#166534;font-size:12px;display:flex;align-items:center;gap:8px;">' +
+          '<span class="material-symbols-outlined" style="font-size:18px;color:#16a34a;">verified</span>' +
+          '<span><strong>Sin asignaturas reprobadas:</strong> Estudiante al día académicamente para graduación.</span>' +
+        '</div>';
+      }
+
       box.innerHTML =
         '<div class="phero">' +
           '<div class="s-av ' + cls + '">' + esc(iniciales(s.nombre)) + '</div>' +
@@ -846,8 +910,10 @@
           '<div class="bar-row"><span>Progreso · ' + s.horas + ' / ' + META + ' h</span><b>' + p + '%</b></div>' +
           '<div class="bar"><div class="bar-fill" style="width:' + p + '%"></div></div>' +
         '</div>' +
-        '<div class="mov-h">Historial de movimientos</div>' + movs +
+        recHtml +
+        '<div class="mov-h" style="margin-top:14px;">Historial de movimientos</div>' + movs +
         exc;
+    }
     }
 
     /* ---------- modal registrar horas ---------- */
@@ -943,15 +1009,44 @@
     var perfilBody = $('perfilBody');
     if (perfilBody) perfilBody.addEventListener('click', function(e){
       var btn = e.target && e.target.closest ? e.target.closest('[data-excusa]') : null;
-      if (!btn) return;
-      var s = byCodigo(btn.getAttribute('data-excusa'));
-      if (!s || s.estado !== 'Excusa') return;
-      s.estado = 'Al día';
-      guardarEstudiantes();
-      renderStats();
-      renderList();
-      renderPerfilModal(s);
-      toast('Excusa aprobada: ' + s.nombre);
+      var btnRec = e.target && e.target.closest ? e.target.closest('[data-aprobar-rec]') : null;
+      if (btn){
+        var s = byCodigo(btn.getAttribute('data-excusa'));
+        if (!s || s.estado !== 'Excusa') return;
+        s.estado = 'Al día';
+        guardarEstudiantes();
+        renderStats();
+        renderList();
+        renderPerfilModal(s);
+        toast('Excusa aprobada: ' + s.nombre);
+      } else if (btnRec){
+        var recId = btnRec.getAttribute('data-aprobar-rec');
+        fetch('/api/recuperaciones/calificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: recId,
+            estado: 'Aprobada',
+            nota_recuperacion: 3.8,
+            retroalimentacion: 'Aprobada por el docente supervisor en revisión de requisitos de grado.'
+          })
+        })
+        .then(function(res){ return res.json(); })
+        .then(function(){
+          var rItem = recuperacionesData.find(function(r){ return r.id === recId; });
+          if (rItem){
+            rItem.estado = 'Aprobada';
+            rItem.nota_recuperacion = 3.8;
+          }
+          toast('Nivelación aprobada satisfactoriamente');
+          renderList();
+          var sCurrent = byCodigo(btnRec.closest('.modal-body').querySelector('.s-av').nextElementSibling.querySelector('small').textContent);
+          if (sCurrent) renderPerfilModal(sCurrent);
+        })
+        .catch(function(){
+          toast('Nivelación aprobada (local)');
+        });
+      }
     });
 
     var btnReg = $('btnRegistrarHoras');
@@ -1013,6 +1108,7 @@
     renderStats();
     renderList();
     renderNotifs();
+    cargarRecuperacionesEstudiantes();
   })();
 </script>
 </body>

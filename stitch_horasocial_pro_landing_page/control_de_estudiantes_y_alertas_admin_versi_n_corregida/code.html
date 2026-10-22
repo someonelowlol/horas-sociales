@@ -781,6 +781,15 @@
         }
       }
     }
+    // Alerta institucional de paz y salvo por materias pendientes de grado
+    lista.unshift({
+      id: 'rec:bloqueo:grado',
+      alumno: 'Estudiantes de 11º (Alex Rodríguez, Samuel Rojas, Mateo Arboleda)',
+      contexto: 'Requisito Académico de Grado · Nivelaciones Pendientes',
+      txt: 'Bloqueo Preventivo: 3 estudiantes adeudan materias académicas. No se emitirá certificado de 80 horas de servicio social hasta culminar y aprobar las nivelaciones.',
+      h: 'Prioritario',
+      grado: 2
+    });
     return lista;
   }
 

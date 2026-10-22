@@ -37,6 +37,32 @@ create table if not exists solicitudes_recuperacion_administradores (
 -- dropped. Password management stays out of the anon-key scope (no Auth admin,
 -- no service_role). These tables only track the recovery request state.
 
+-- Tabla para seguimiento de recuperaciones y nivelaciones de materias adeudadas
+create table if not exists recuperaciones_materias (
+    id text primary key,
+    estudiante_id text not null,
+    estudiante_nombre text not null,
+    grado text not null,
+    materia text not null,
+    periodo text not null,
+    docente_nombre text not null,
+    docente_email text,
+    nota_definitiva numeric(3,1) not null default 0.0,
+    nota_minima numeric(3,1) not null default 3.0,
+    nota_recuperacion numeric(3,1),
+    fecha_asignacion date not null default current_date,
+    fecha_limite text,
+    fecha_sustentacion text,
+    estado text not null default 'Pendiente' check (estado in ('Pendiente', 'En revisión', 'Aprobada', 'No aprobada')),
+    taller_titulo text,
+    taller_descripcion text,
+    temas jsonb,
+    criterios text,
+    entrega_estudiante jsonb,
+    retroalimentacion_docente text,
+    created_at timestamptz not null default now()
+);
+
 -- User accounts, one table for every role (simplest consistent choice: a single
 -- SELECT/INSERT path instead of three mirrored tables, unique per (rol, usuario)
 -- so the same username can exist once per role).

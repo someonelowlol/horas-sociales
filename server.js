@@ -117,6 +117,32 @@ function saveLocalAdminRequests(requests) {
     }
 }
 
+// ==========================================
+// STORE: RECUPERACIONES ACADÉMICAS DE MATERIAS
+// Permite consultar, registrar entregas y calificar materias pendientes de estudiantes
+// ==========================================
+const RECUPERACIONES_FILE = path.join(STATIC_ROOT, 'recuperaciones_materias.json');
+
+function getLocalRecuperaciones() {
+    try {
+        if (fs.existsSync(RECUPERACIONES_FILE)) {
+            const data = fs.readFileSync(RECUPERACIONES_FILE, 'utf8');
+            return JSON.parse(data || '[]');
+        }
+    } catch (err) {
+        console.error('Error reading recuperaciones file:', err.message);
+    }
+    return [];
+}
+
+function saveLocalRecuperaciones(recs) {
+    try {
+        fs.writeFileSync(RECUPERACIONES_FILE, JSON.stringify(recs, null, 2), 'utf8');
+    } catch (err) {
+        console.error('Error writing recuperaciones file:', err.message);
+    }
+}
+
 // Local user store (local mode only, mirrors the recovery-request pattern).
 // Runtime file, never committed. Supabase is the source of truth when env is set.
 const USUARIOS_FILE = path.join(STATIC_ROOT, 'usuarios.json');
@@ -671,6 +697,102 @@ app.post('/api/login-maestro', (req, res) => handleLogin('maestro', req, res, '/
 app.post('/api/login-administrador', (req, res) => handleLogin('administrador', req, res, '/admin/dashboard'));
 
 // ==========================================
+// API ENDPOINTS: RECUPERACIONES ACADÉMICAS DE MATERIAS
+// ==========================================
+
+// Obtener listado de recuperaciones de materias
+app.get('/api/recuperaciones', (req, res) => {
+    const { estudiante_id, estado, materia } = req.query;
+    let recs = getLocalRecuperaciones();
+    if (estudiante_id) {
+        recs = recs.filter(r => r.estudiante_id === estudiante_id);
+    }
+    if (estado) {
+        recs = recs.filter(r => String(r.estado).toLowerCase() === String(estado).toLowerCase());
+    }
+    if (materia) {
+        recs = recs.filter(r => String(r.materia).toLowerCase().includes(String(materia).toLowerCase()));
+    }
+    res.json(recs);
+});
+
+// Registrar entrega de taller o evidencias por parte del estudiante
+app.post('/api/recuperaciones/entregar', (req, res) => {
+    const { id, enlace_archivo, observaciones } = req.body || {};
+    if (!id) return res.status(400).json({ error: 'ID de recuperación requerido' });
+    
+    let recs = getLocalRecuperaciones();
+    const index = recs.findIndex(r => r.id === id);
+    if (index === -1) return res.status(404).json({ error: 'Recuperación no encontrada' });
+    
+    recs[index].estado = 'En revisión';
+    recs[index].entrega_estudiante = {
+        fecha: new Date().toISOString(),
+        enlace_archivo: enlace_archivo || 'Archivo de evidencias adjunto',
+        observaciones: observaciones || ''
+    };
+    saveLocalRecuperaciones(recs);
+    res.json({ success: true, message: 'Taller de recuperación entregado exitosamente. Estado: En revisión', recuperacion: recs[index] });
+});
+
+// Calificar / autorizar aprobación de recuperación por parte del docente
+app.post('/api/recuperaciones/calificar', (req, res) => {
+    const { id, estado, nota_recuperacion, retroalimentacion } = req.body || {};
+    if (!id || !estado) return res.status(400).json({ error: 'ID y estado son requeridos' });
+    
+    let recs = getLocalRecuperaciones();
+    const index = recs.findIndex(r => r.id === id);
+    if (index === -1) return res.status(404).json({ error: 'Recuperación no encontrada' });
+    
+    recs[index].estado = estado; // 'Aprobada', 'No aprobada', 'En revisión', 'Pendiente'
+    if (nota_recuperacion !== undefined && nota_recuperacion !== null && nota_recuperacion !== '') {
+        recs[index].nota_recuperacion = Number(nota_recuperacion);
+    }
+    if (retroalimentacion) {
+        recs[index].retroalimentacion_docente = retroalimentacion;
+    }
+    saveLocalRecuperaciones(recs);
+    res.json({ success: true, message: `Recuperación actualizada a estado: ${estado}`, recuperacion: recs[index] });
+});
+
+// Solicitar o registrar una nueva materia en plan de mejoramiento
+app.post('/api/recuperaciones/solicitar', (req, res) => {
+    const { materia, periodo, docente_nombre, nota_definitiva, notas_adicionales, fecha_limite } = req.body || {};
+    if (!materia) return res.status(400).json({ error: 'El nombre de la materia es obligatorio' });
+    
+    let recs = getLocalRecuperaciones();
+    const newRec = {
+        id: 'rec-' + Date.now(),
+        estudiante_id: req.body.estudiante_id || 'alex-11',
+        estudiante_nombre: req.body.estudiante_nombre || 'Alex Rodríguez',
+        grado: req.body.grado || '11º A',
+        materia,
+        periodo: periodo || 'Periodo en curso',
+        docente_nombre: docente_nombre || 'Docente de Asignatura',
+        docente_email: 'docente@horasocialpro.edu.co',
+        docente_iniciales: materia.trim().substring(0, 2).toUpperCase(),
+        docente_color: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+        nota_definitiva: Number(nota_definitiva) || 2.5,
+        nota_minima: 3.0,
+        nota_recuperacion: null,
+        fecha_asignacion: new Date().toISOString().split('T')[0],
+        fecha_limite: fecha_limite || '2026-11-15',
+        fecha_sustentacion: 'Por agendar con docente',
+        estado: 'Pendiente',
+        taller_titulo: 'Plan de Recuperación y Nivelación: ' + materia,
+        taller_descripcion: notas_adicionales || 'Guía de nivelación asignada para el cumplimiento de requisitos académicos.',
+        temas: ['Competencias fundamentales del periodo', 'Talleres prácticos y sustentación oral'],
+        criterios: 'Taller: 40% · Sustentación: 60%. Aprobación mínima: 3.0',
+        entrega_estudiante: null,
+        retroalimentacion_docente: null
+    };
+    
+    recs.unshift(newRec);
+    saveLocalRecuperaciones(recs);
+    res.json({ success: true, message: 'Solicitud de recuperación registrada correctamente', recuperacion: newRec });
+});
+
+// ==========================================
 // PAGE ROUTES (single source of truth — keep every page route in this table only)
 // ==========================================
 
@@ -734,6 +856,11 @@ app.get('/sobre', (req, res) => {
 });
 
 app.get('/estudiante/dashboard', (req, res) => {
+    res.sendFile(path.join(STATIC_ROOT, 'dashboard_estudiante_horasocial_pro', 'index.html'));
+});
+
+// Alias directo para acceder a la sección de recuperaciones del estudiante
+app.get('/estudiante/recuperaciones', (req, res) => {
     res.sendFile(path.join(STATIC_ROOT, 'dashboard_estudiante_horasocial_pro', 'index.html'));
 });
 

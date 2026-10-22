@@ -1,48 +1,1042 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Horas Sociales – Landing Page</title>
-    <meta name="description" content="Plataforma de Horas Sociales para gestionar y visualizar actividades comunitarias." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="/design.css" />
-  <link rel="stylesheet" href="/responsive.css">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>HORASOCIAL PRO - Servicio Social y Recuperaciones Académicas</title>
+  <meta name="description" content="Plataforma institucional para la gestión del servicio social obligatorio (80 horas) y el plan de nivelaciones y recuperaciones académicas para graduación de 10º y 11º." />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --navy-700: #334155;
+      --sky-600: #0284c7;
+      --sky-500: #0ea5e9;
+      --sky-400: #38bdf8;
+      --sky-100: #e0f2fe;
+      --sky-50: #f0f9ff;
+      --emerald-600: #059669;
+      --emerald-500: #10b981;
+      --emerald-50: #ecfdf5;
+      --amber-600: #d97706;
+      --amber-500: #f59e0b;
+      --amber-50: #fffbeb;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: #e2e8f0;
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--navy-900);
+      background: #f8fafc;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, h5, .font-headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Flow garland background */
+    .flow-field {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .flow-field svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .wf-l {
+      fill: none;
+      stroke-width: 0.9;
+      vector-effect: non-scaling-stroke;
+    }
+    .wiggle {
+      animation: flow-drift 40s ease-in-out infinite;
+      will-change: transform;
+    }
+    @keyframes flow-drift {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(12px, -18px); }
+      50% { transform: translate(24px, -8px); }
+      75% { transform: translate(14px, 10px); }
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      transition: all 0.25s ease;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 74px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--navy-900);
+    }
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--sky-600), var(--navy-900));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+    }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .logo-text b {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .logo-text small {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--sky-600);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--slate-700);
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .nav-link:hover {
+      color: var(--sky-600);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--card-border);
+      background: #fff;
+      color: var(--navy-900);
+      transition: all 0.18s ease;
+    }
+    .btn-secondary:hover {
+      background: var(--sky-50);
+      border-color: var(--sky-400);
+      color: var(--sky-600);
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--sky-600), var(--navy-900));
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.38);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 70px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--sky-100);
+      border: 1px solid rgba(14, 165, 233, 0.35);
+      color: var(--sky-600);
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 800;
+      margin-bottom: 24px;
+    }
+    .hero-badge .material-symbols-outlined {
+      font-size: 17px;
+    }
+    .hero h1 {
+      font-size: 46px;
+      font-weight: 800;
+      color: var(--navy-900);
+      line-height: 1.15;
+      letter-spacing: -1.2px;
+      max-width: 880px;
+      margin: 0 auto 20px;
+    }
+    .hero h1 span.gradient {
+      background: linear-gradient(135deg, var(--sky-600), #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--slate-500);
+      max-width: 720px;
+      margin: 0 auto 34px;
+      line-height: 1.6;
+    }
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 50px;
+    }
+
+    /* Live Notice Banner */
+    .req-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      max-width: 820px;
+      margin: 0 auto 50px;
+      text-align: left;
+    }
+    .req-banner .material-symbols-outlined {
+      font-size: 32px;
+      color: var(--sky-600);
+      flex: 0 0 auto;
+    }
+    .req-banner p {
+      font-size: 13.5px;
+      color: #1e3a8a;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .req-banner strong {
+      font-weight: 800;
+    }
+
+    /* Stats Grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 70px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px 18px;
+      text-align: center;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+      backdrop-filter: blur(12px);
+    }
+    .stat-card .val {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--navy-900);
+      line-height: 1.1;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .stat-card .lbl {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--slate-500);
+      margin-top: 6px;
+    }
+
+    /* Features Section */
+    .section-title {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+    .section-title h2 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--navy-900);
+      letter-spacing: -0.6px;
+    }
+    .section-title p {
+      font-size: 15px;
+      color: var(--slate-500);
+      margin-top: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 70px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.09);
+      border-color: var(--sky-400);
+    }
+    .feature-ico {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .feature-ico.blue { background: var(--sky-100); color: var(--sky-600); }
+    .feature-ico.amber { background: var(--amber-50); color: var(--amber-600); }
+    .feature-ico.green { background: var(--emerald-50); color: var(--emerald-600); }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy-900);
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      font-size: 13.5px;
+      color: var(--slate-500);
+      line-height: 1.6;
+    }
+
+    /* Roles Section */
+    .roles-section {
+      padding: 60px 0;
+      background: linear-gradient(180deg, rgba(240, 249, 255, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 70px;
+    }
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .role-card {
+      background: #fff;
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 32px 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      transition: all 0.22s ease;
+    }
+    .role-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+    .role-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+    .role-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+    .role-icon.student { background: #e0f2fe; color: #0369a1; }
+    .role-icon.teacher { background: #fef3c7; color: #b45309; }
+    .role-icon.admin { background: #ede9fe; color: #6d28d9; }
+    .role-title b {
+      font-size: 18px;
+      font-weight: 800;
+      display: block;
+      color: var(--navy-900);
+    }
+    .role-title small {
+      font-size: 12px;
+      color: var(--slate-500);
+      font-weight: 600;
+    }
+    .role-card ul {
+      list-style: none;
+      margin-bottom: 24px;
+      flex: 1;
+      width: 100%;
+    }
+    .role-card li {
+      font-size: 13px;
+      color: var(--slate-700);
+      margin-bottom: 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .role-card li .material-symbols-outlined {
+      font-size: 16px;
+      color: var(--emerald-600);
+    }
+    .role-card .role-btn {
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13.5px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      display: inline-block;
+    }
+    .role-btn.student-btn { background: #0284c7; color: #fff; }
+    .role-btn.student-btn:hover { background: #0369a1; }
+    .role-btn.teacher-btn { background: #f59e0b; color: #fff; }
+    .role-btn.teacher-btn:hover { background: #d97706; }
+    .role-btn.admin-btn { background: var(--navy-900); color: #fff; }
+    .role-btn.admin-btn:hover { background: var(--navy-800); }
+
+    /* Interactive Preview Box */
+    .preview-box {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 34px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      margin-bottom: 80px;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .preview-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 800;
+      border: 1px solid var(--card-border);
+      background: #f8fafc;
+      color: var(--slate-700);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: var(--navy-900);
+      color: #fff;
+      border-color: var(--navy-900);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mock cards inside preview */
+    .mock-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .mock-card {
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      background: #f8fafc;
+    }
+    .mock-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mock-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .mock-badge.amber { background: #fef3c7; color: #b45309; }
+    .mock-badge.blue { background: #e0f2fe; color: #0284c7; }
+    .mock-badge.green { background: #dcfce7; color: #15803d; }
+
+    /* Footer */
+    .footer {
+      background: var(--navy-900);
+      color: #fff;
+      padding: 50px 0 30px;
+      position: relative;
+      z-index: 2;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      text-decoration: none;
+    }
+    .footer-links {
+      display: flex;
+      gap: 22px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 13.5px;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover {
+      color: #fff;
+    }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: #64748b;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 34px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: 1fr; }
+      .roles-grid { grid-template-columns: 1fr; }
+      .mock-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <header class="site-header">
-        <h1>Horas Sociales</h1>
-        <nav class="nav">
-            <ul>
-                <li><a href="#" class="nav-link">Inicio</a></li>
-                <li><a href="#" class="nav-link">Acerca</a></li>
-                <li><a href="#" class="nav-link">Contactos</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main class="main-content">
-        <!-- SECTION: Hero -->
-        <section class="hero" id="hero">
-            <h2>Conecta, comparte y registra tus horas sociales</h2>
-            <p>Plataforma intuitiva para visualizar el impacto de tus actividades comunitarias.</p>
-            <button class="cta-btn" id="load-stats">Ver Estadísticas</button>
-            <a class="cta-btn hs-demo-btn" href="/demo">Ver demo</a>
-        </section>
-        <!-- SECTION: Stats (populated via JS) -->
-        <section class="stats" id="stats" hidden>
-            <h3>Estadísticas en tiempo real</h3>
-            <div class="stats-grid" id="stats-grid">
-                <!-- Dynamic cards will be inserted here -->
+
+  <!-- Ambient Wave Field -->
+  <div class="flow-field wiggle" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="gradFlow" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#cde9ff" />
+          <stop offset="35%" stop-color="#9fd4ff" />
+          <stop offset="70%" stop-color="#5fb4f7" />
+          <stop offset="100%" stop-color="#7dbfc8" />
+        </linearGradient>
+      </defs>
+      <path class="wf-l" stroke="url(#gradFlow)" opacity="0.12" transform="translate(0, 10)" d="M-740,0 C-460,-56 -300,56 -60,0 C220,-56 380,56 620,0 C860,-56 1020,56 1260,0 C1480,-40 1570,-20 1660,-8" />
+      <path class="wf-l" stroke="url(#gradFlow)" opacity="0.18" transform="translate(30, 70)" d="M-740,0 C-460,-56 -300,56 -60,0 C220,-56 380,56 620,0 C860,-56 1020,56 1260,0 C1480,-40 1570,-20 1660,-8" />
+      <path class="wf-l" stroke="url(#gradFlow)" opacity="0.25" transform="translate(60, 140)" d="M-740,0 C-460,-56 -300,56 -60,0 C220,-56 380,56 620,0 C860,-56 1020,56 1260,0 C1480,-40 1570,-20 1660,-8" />
+      <path class="wf-l" stroke="url(#gradFlow)" opacity="0.32" transform="translate(90, 210)" d="M-740,0 C-460,-56 -300,56 -60,0 C220,-56 380,56 620,0 C860,-56 1020,56 1260,0 C1480,-40 1570,-20 1660,-8" />
+      <path class="wf-l" stroke="url(#gradFlow)" opacity="0.38" transform="translate(120, 280)" d="M-740,0 C-460,-56 -300,56 -60,0 C220,-56 380,56 620,0 C860,-56 1020,56 1260,0 C1480,-40 1570,-20 1660,-8" />
+    </svg>
+  </div>
+
+  <!-- Header & Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <div class="logo-badge">
+          <span class="material-symbols-outlined">school</span>
+        </div>
+        <div class="logo-text">
+          <b>HORASOCIAL PRO</b>
+          <small>Servicio Social &amp; Nivelaciones</small>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#inicio" class="nav-link">Inicio</a></li>
+        <li><a href="#requisitos" class="nav-link">Servicio Social</a></li>
+        <li><a href="#recuperaciones" class="nav-link">Recuperaciones</a></li>
+        <li><a href="#roles" class="nav-link">Roles</a></li>
+        <li><a href="#simulador" class="nav-link">Simulador</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="/demo" class="btn-secondary">
+          <span class="material-symbols-outlined" style="font-size:18px;">play_circle</span>
+          Ver Demo
+        </a>
+        <a href="/seleccion-rol" class="btn-primary">
+          <span>Ingresar</span>
+          <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="material-symbols-outlined">verified</span>
+          Sistema Oficial de Graduación y Servicio Comunitario
+        </div>
+
+        <h1>
+          Formando tu futuro, asegurando tu grado <br />
+          <span class="gradient">social y académicamente.</span>
+        </h1>
+
+        <p>
+          Gestiona las <strong>80 horas reglamentarias de servicio social</strong> y supervisa los <strong>planes de nivelación académica</strong> para que ningún estudiante de 10º o 11º tenga impedimentos en su ceremonia de grado.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="/seleccion-rol" class="btn-primary" style="padding: 14px 28px; font-size: 15px;">
+            <span class="material-symbols-outlined">login</span>
+            Acceder a mi Portal
+          </a>
+          <a href="/estudiante/dashboard" class="btn-secondary" style="padding: 14px 24px; font-size: 15px;">
+            <span class="material-symbols-outlined">auto_stories</span>
+            Ver Módulo de Nivelaciones
+          </a>
+        </div>
+
+        <!-- Institutional Graduation Requirement Banner -->
+        <div class="req-banner" id="requisitos">
+          <span class="material-symbols-outlined">warning</span>
+          <p>
+            <strong>Requisito Institucional de Grado:</strong> Según la normativa de educación secundaria, para obtener el <em>Paz y Salvo de Servicio Social</em>, los estudiantes de grado 11º deben haber completado sus 80 horas comunitarias y haber superado satisfactoriamente todas las asignaturas académicas pendientes.
+          </p>
+        </div>
+
+        <!-- Real-time Institutional Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="val" id="statHoras">80 h</div>
+            <div class="lbl">Meta Reglamentaria</div>
+          </div>
+          <div class="stat-card">
+            <div class="val" id="statEstudiantes">1,240+</div>
+            <div class="lbl">Estudiantes Vinculados</div>
+          </div>
+          <div class="stat-card">
+            <div class="val" id="statBrigadas">3</div>
+            <div class="lbl">Brigadas Comunitarias</div>
+          </div>
+          <div class="stat-card">
+            <div class="val" id="statEficacia">100%</div>
+            <div class="lbl">Paz y Salvo Digital</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Platform Capabilities -->
+    <section class="container" id="recuperaciones">
+      <div class="section-title">
+        <h2>Plataforma Integral Dos en Uno</h2>
+        <p>Integración en tiempo real entre el servicio social escolar y el departamento de coordinación académica.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-ico blue">
+            <span class="material-symbols-outlined">volunteer_activism</span>
+          </div>
+          <h3>Servicio Social Estudiantil</h3>
+          <p>
+            Control de asistencia, bitácoras de actividades, cálculo automático de horas en brigadas ambientales, de apoyo académico y comunitarias.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-ico amber">
+            <span class="material-symbols-outlined">auto_stories</span>
+          </div>
+          <h3>Nivelaciones Académicas</h3>
+          <p>
+            Gestión de materias adeudadas con temarios oficiales, fechas de sustentación presencial, entrega de talleres por Google Drive y calificación docente.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-ico green">
+            <span class="material-symbols-outlined">verified_user</span>
+          </div>
+          <h3>Certificado Digital de Grado</h3>
+          <p>
+            Generación y radicación de constancias una vez validadas las 80 horas de servicio y verificada la superación de materias en plan de mejoramiento.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Interactive Simulator / Preview -->
+      <div class="preview-box" id="simulador">
+        <div class="preview-header">
+          <div>
+            <h3 style="font-size:20px;font-weight:800;color:var(--navy-900);">Simulador Interactivo de Módulos</h3>
+            <p style="font-size:13px;color:var(--slate-500);margin-top:2px;">Haz clic en cada pestaña para explorar el funcionamiento en vivo de la plataforma.</p>
+          </div>
+          <div class="preview-tabs">
+            <button class="tab-btn active" onclick="switchPreview('nivelaciones', this)">Recuperaciones</button>
+            <button class="tab-btn" onclick="switchPreview('horas', this)">Horas Sociales</button>
+            <button class="tab-btn" onclick="switchPreview('docente', this)">Vista Docente</button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Recuperaciones -->
+        <div class="tab-content show" id="tab-nivelaciones">
+          <div class="mock-row">
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Matemáticas 11°</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">Docente: Lic. Ricardo Morales · 11º A</div>
+                </div>
+                <span class="mock-badge amber">Pendiente</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--slate-700);margin-bottom:10px;">
+                Nota reprobada: <strong style="color:#dc2626;">2.4 / 5.0</strong> · Mínimo: 3.0
+              </div>
+              <p style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.5;">
+                Taller: Límites indeterminados, continuidad y derivadas básicas. Sustentación oral agendada.
+              </p>
+              <a href="/estudiante/dashboard" class="btn-secondary" style="padding:8px 14px;font-size:12px;width:100%;justify-content:center;">
+                <span class="material-symbols-outlined" style="font-size:16px;">upload_file</span>
+                Entregar Evidencias (Drive)
+              </a>
             </div>
-        </section>
-    </main>
-    <footer class="site-footer">
-        <p>&copy; 2026 Horas Sociales. Todos los derechos reservados.</p>
-    </footer>
-    <script src="assets/js/app.js"></script>
+
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Química Orgánica</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">Docente: Dra. Laura Gómez · 11º A</div>
+                </div>
+                <span class="mock-badge blue">En revisión</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--slate-700);margin-bottom:10px;">
+                Nota reprobada: <strong style="color:#dc2626;">2.7 / 5.0</strong> · Mínimo: 3.0
+              </div>
+              <p style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.5;">
+                Evidencias entregadas por el estudiante vía Google Drive. En espera de evaluación.
+              </p>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sky-600);font-weight:700;">
+                <span class="material-symbols-outlined" style="font-size:18px;">hourglass_top</span>
+                Docente revisando taller
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Horas Sociales -->
+        <div class="tab-content" id="tab-horas">
+          <div class="mock-row">
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Brigada Ambiental</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">Siembra y jornadas ecológicas escolares</div>
+                </div>
+                <span class="mock-badge green">48 / 80 h</span>
+              </div>
+              <div style="height:8px;background:#e2e8f0;border-radius:99px;margin:12px 0;overflow:hidden;">
+                <div style="width:60%;height:100%;background:linear-gradient(90deg,#0ea5e9,#0284c7);border-radius:99px;"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--slate-500);">
+                <span>Progreso: 60%</span>
+                <span>Faltan 32 horas</span>
+              </div>
+            </div>
+
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Registro de Asistencia</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">Geolocalización y validación QR</div>
+                </div>
+                <span class="mock-badge green">Al día</span>
+              </div>
+              <p style="font-size:12px;color:var(--slate-500);margin-bottom:12px;line-height:1.5;">
+                Registros diarios aprobados por el docente tutor. Notificación instantánea al acudiente.
+              </p>
+              <a href="/estudiante/dashboard" class="btn-primary" style="padding:8px 14px;font-size:12px;width:100%;justify-content:center;">
+                Ir a mi Agenda de Turnos
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Docente -->
+        <div class="tab-content" id="tab-docente">
+          <div class="mock-row">
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Panel del Maestro Ricardo</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">75 Estudiantes supervisados</div>
+                </div>
+                <span class="mock-badge blue">3 Nivelaciones</span>
+              </div>
+              <p style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.5;">
+                Revisa y califica con un clic los talleres de recuperación entregados por los alumnos.
+              </p>
+              <a href="/maestro/dashboard" class="btn-secondary" style="padding:8px 14px;font-size:12px;width:100%;justify-content:center;">
+                Abrir Panel del Docente
+              </a>
+            </div>
+
+            <div class="mock-card">
+              <div class="mock-card-top">
+                <div>
+                  <b style="font-size:15px;color:var(--navy-900);">Coordinación y Alertas</b>
+                  <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">Secretaría Académica</div>
+                </div>
+                <span class="mock-badge amber">Bloqueo Activo</span>
+              </div>
+              <p style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.5;">
+                Detección automática de estudiantes con horas completadas pero materias pendientes para el grado.
+              </p>
+              <a href="/admin/alertas" class="btn-primary" style="padding:8px 14px;font-size:12px;width:100%;justify-content:center;">
+                Ver Alertas de Coordinación
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Portals Section -->
+    <section class="roles-section" id="roles">
+      <div class="container">
+        <div class="section-title">
+          <h2>Elige tu Perfil de Ingreso</h2>
+          <p>Accesos personalizados con herramientas especializadas para cada miembro de la comunidad educativa.</p>
+        </div>
+
+        <div class="roles-grid">
+          <!-- Student Card -->
+          <div class="role-card">
+            <div class="role-header">
+              <div class="role-icon student">
+                <span class="material-symbols-outlined">school</span>
+              </div>
+              <div class="role-title">
+                <b>Estudiante</b>
+                <small>Grados 10º y 11º</small>
+              </div>
+            </div>
+            <ul>
+              <li><span class="material-symbols-outlined">check</span> Registro de horas de servicio</li>
+              <li><span class="material-symbols-outlined">check</span> Consulta de materias adeudadas</li>
+              <li><span class="material-symbols-outlined">check</span> Entrega de talleres y guías en Drive</li>
+              <li><span class="material-symbols-outlined">check</span> Estado de paz y salvo de grado</li>
+            </ul>
+            <a href="/login" class="role-btn student-btn">Ingresar como Estudiante</a>
+          </div>
+
+          <!-- Teacher Card -->
+          <div class="role-card">
+            <div class="role-header">
+              <div class="role-icon teacher">
+                <span class="material-symbols-outlined">badge</span>
+              </div>
+              <div class="role-title">
+                <b>Maestro / Docente</b>
+                <small>Supervisión y Evaluación</small>
+              </div>
+            </div>
+            <ul>
+              <li><span class="material-symbols-outlined">check</span> Control de asistencia a brigadas</li>
+              <li><span class="material-symbols-outlined">check</span> Calificación de nivelaciones</li>
+              <li><span class="material-symbols-outlined">check</span> Retroalimentación pedagógica</li>
+              <li><span class="material-symbols-outlined">check</span> Descarga de reportes en PDF</li>
+            </ul>
+            <a href="/profesor/login" class="role-btn teacher-btn">Ingresar como Maestro</a>
+          </div>
+
+          <!-- Admin Card -->
+          <div class="role-card">
+            <div class="role-header">
+              <div class="role-icon admin">
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+              </div>
+              <div class="role-title">
+                <b>Administrador</b>
+                <small>Coordinación Institucional</small>
+              </div>
+            </div>
+            <ul>
+              <li><span class="material-symbols-outlined">check</span> Alertas de impedimentos de grado</li>
+              <li><span class="material-symbols-outlined">check</span> Gestión de cupos y brigadas</li>
+              <li><span class="material-symbols-outlined">check</span> Emisión de certificados oficiales</li>
+              <li><span class="material-symbols-outlined">check</span> Auditoría y bitácora general</li>
+            </ul>
+            <a href="/admin/login" class="role-btn admin-btn">Ingresar como Administrador</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="/" class="footer-logo">
+          <div class="logo-badge" style="width:38px;height:38px;font-size:20px;">
+            <span class="material-symbols-outlined">school</span>
+          </div>
+          <div class="logo-text">
+            <b style="font-size:17px;color:#fff;">HORASOCIAL PRO</b>
+            <small style="color:#7dd3fc;">Servicio Social &amp; Nivelaciones</small>
+          </div>
+        </a>
+
+        <ul class="footer-links">
+          <li><a href="/seleccion-rol">Selección de Rol</a></li>
+          <li><a href="/estudiante/dashboard">Portal Estudiante</a></li>
+          <li><a href="/maestro/dashboard">Portal Maestro</a></li>
+          <li><a href="/admin/dashboard">Portal Administrador</a></li>
+          <li><a href="/demo">Demo Rápido</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 HORASOCIAL PRO. Todos los derechos reservados. Desarrollado para instituciones educativas.</div>
+        <div>Cumplimiento de la Resolución 4210 del Ministerio de Educación Nacional.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function switchPreview(tabId, el) {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('show'); });
+      el.classList.add('active');
+      var target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('show');
+    }
+
+    // Dynamic stats loader
+    (function() {
+      fetch('/api/recuperaciones')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (Array.isArray(data) && data.length) {
+            var stNiv = document.getElementById('statBrigadas');
+            if (stNiv) stNiv.textContent = data.length + ' Materias';
+          }
+        })
+        .catch(function() {});
+    })();
+  </script>
 </body>
 </html>

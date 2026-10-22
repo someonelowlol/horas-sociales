@@ -343,12 +343,36 @@
   .banner-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
   .banner-btns .banner-btn{margin-top:0}
 
+  /* ---------- modal nivelaciones maestro ---------- */
+  .niv-tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+  .niv-tab{padding:8px 14px;border-radius:999px;font-size:11.5px;font-weight:800;border:1px solid var(--card-brd);background:#fff;color:var(--slate);cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+  .niv-tab.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900)}
+  .niv-card{border:1px solid var(--card-brd);border-radius:18px;background:#fff;padding:16px;margin-bottom:12px;box-shadow:0 4px 14px rgba(3,105,161,.06);transition:box-shadow .2s}
+  .niv-card:hover{box-shadow:0 8px 22px rgba(3,105,161,.12)}
+  .niv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .niv-title{font-size:14.5px;font-weight:800;color:var(--navy-900)}
+  .niv-meta{font-size:12px;color:var(--slate);font-weight:600;margin-top:2px}
+  .niv-pill{font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .niv-pill.pend{background:#ffedd5;color:#c2410c}
+  .niv-pill.rev{background:#e0f2fe;color:#0284c7}
+  .niv-pill.ok{background:#d1fae5;color:#047857}
+  .niv-score-box{display:flex;align-items:center;gap:14px;background:var(--sky-50);border:1px solid var(--sky-200);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px}
+  .niv-score-box b{font-weight:800;color:var(--navy-900)}
+  .niv-delivery{background:#f8fafc;border-left:3px solid var(--sky-500);border-radius:0 12px 12px 0;padding:10px 14px;margin-bottom:12px;font-size:12px}
+  .niv-delivery a{color:var(--sky-600);font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  .niv-delivery a:hover{text-decoration:underline}
+  .niv-grade-form{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:10px;border-top:1px dashed var(--card-brd)}
+  .niv-input{padding:8px 10px;border:1px solid var(--card-brd);border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;width:80px;outline:none}
+  .niv-input:focus{border-color:var(--sky-500)}
+  .niv-text{flex:1;min-width:160px;padding:8px 12px;border:1px solid var(--card-brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none}
+  .niv-text:focus{border-color:var(--sky-500)}
+
   /* ---------- layout amplio ---------- */
   @media (min-width:720px){
     .stats{grid-template-columns:repeat(4,1fr);gap:14px}
     .stat{padding:20px 10px}
     .brigades{grid-template-columns:repeat(3,1fr)}
-    .quick{grid-template-columns:1fr 1fr}
+    .quick{grid-template-columns:repeat(3,1fr)}
     .banner{padding:30px 28px}
     .greet h2{font-size:24px}
   }
@@ -515,6 +539,11 @@
         <span class="qinfo"><b>Aprobar Reportes</b><small id="repSmall">8 reportes nuevos</small></span>
         <span class="material-symbols-outlined arr">arrow_forward_ios</span>
       </a>
+      <a class="qcard" id="btnNivelaciones" href="#" role="button" aria-label="Revisar nivelaciones académicas">
+        <span class="qico" style="background:#e0e7ff;color:#4338ca"><span class="material-symbols-outlined">auto_stories</span></span>
+        <span class="qinfo"><b>Nivelaciones Académicas</b><small id="nivSmall">3 por revisar</small></span>
+        <span class="material-symbols-outlined arr">arrow_forward_ios</span>
+      </a>
     </div>
   </section>
 
@@ -597,6 +626,32 @@
       <div class="rep-note" id="repDoneNote"></div>
       <div class="rep-empty" id="repEmpty"><span class="material-symbols-outlined">task_alt</span><span>Sin reportes pendientes</span></div>
       <div id="repList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modal: nivelaciones académicas de materias -->
+<div class="modal-backdrop" id="modalNivelaciones" role="dialog" aria-modal="true" aria-label="Nivelaciones Académicas">
+  <div class="modal" role="document">
+    <div class="modal-head">
+      <div>
+        <h3><span class="m material-symbols-outlined">auto_stories</span>Nivelaciones Académicas</h3>
+        <p>Revisión y calificación de talleres para habilitación de grado</p>
+      </div>
+      <button class="modal-x" id="xNivelaciones" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#1e40af;display:flex;align-items:center;gap:10px;">
+        <span class="material-symbols-outlined" style="font-size:22px;color:#2563eb">verified</span>
+        <span><strong>Requisito Institucional:</strong> Al aprobar las materias en nivelación, los estudiantes quedan habilitados para recibir su certificación final de Servicio Social Obligatorio.</span>
+      </div>
+      <div class="niv-tabs" id="nivTabs">
+        <button class="niv-tab active" type="button" data-filtro="todos">Todas (<span id="countNivTodas">0</span>)</button>
+        <button class="niv-tab" type="button" data-filtro="revision">En revisión (<span id="countNivRev">0</span>)</button>
+        <button class="niv-tab" type="button" data-filtro="pendientes">Pendientes (<span id="countNivPend">0</span>)</button>
+        <button class="niv-tab" type="button" data-filtro="aprobadas">Aprobadas (<span id="countNivAprob">0</span>)</button>
+      </div>
+      <div id="nivList"></div>
     </div>
   </div>
 </div>
@@ -1107,15 +1162,203 @@
       toast((aprobar ? 'Reporte aprobado: ' : 'Reporte rechazado: ') + rec.estudiante);
     });
 
-    var mA = $('modalActividades'), mS = $('modalAsistencia'), mR = $('modalReportes');
-    var xA = $('xActividades'), xS = $('xAsistencia'), xR = $('xReportes');
+    var mA = $('modalActividades'), mS = $('modalAsistencia'), mR = $('modalReportes'), mN = $('modalNivelaciones');
+    var xA = $('xActividades'), xS = $('xAsistencia'), xR = $('xReportes'), xN = $('xNivelaciones');
     if (xA) xA.addEventListener('click', function(){ cerrarModal(mA); });
     if (xS) xS.addEventListener('click', function(){ cerrarModal(mS); });
     if (xR) xR.addEventListener('click', function(){ cerrarModal(mR); });
+    if (xN) xN.addEventListener('click', function(){ cerrarModal(mN); });
     if (mA) mA.addEventListener('click', function(e){ if (e.target === mA) cerrarModal(mA); });
     if (mS) mS.addEventListener('click', function(e){ if (e.target === mS) cerrarModal(mS); });
     if (mR) mR.addEventListener('click', function(e){ if (e.target === mR) cerrarModal(mR); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ cerrarModal(mA); cerrarModal(mS); cerrarModal(mR); } });
+    if (mN) mN.addEventListener('click', function(e){ if (e.target === mN) cerrarModal(mN); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ cerrarModal(mA); cerrarModal(mS); cerrarModal(mR); cerrarModal(mN); } });
+
+    /* ---------- nivelaciones académicas maestro ---------- */
+    var LS_REC = 'horasocial_recuperaciones_v1';
+    var filtroNiv = 'todos';
+    var recsList = [];
+
+    function cargarNivelaciones(){
+      fetch('/api/recuperaciones')
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if (Array.isArray(data) && data.length){
+            recsList = data;
+            try { localStorage.setItem(LS_REC, JSON.stringify(data)); } catch(e){}
+            renderNivelaciones();
+          }
+        })
+        .catch(function(){
+          try {
+            var raw = localStorage.getItem(LS_REC);
+            if (raw) recsList = JSON.parse(raw);
+          } catch(e){}
+          renderNivelaciones();
+        });
+    }
+
+    function renderNivelaciones(){
+      var container = $('nivList');
+      if (!container) return;
+
+      var todas = recsList.length;
+      var enRev = recsList.filter(function(r){ return r.estado === 'En revisión'; }).length;
+      var pend = recsList.filter(function(r){ return r.estado === 'Pendiente'; }).length;
+      var aprob = recsList.filter(function(r){ return r.estado === 'Aprobada'; }).length;
+
+      var cTodas = $('countNivTodas'), cRev = $('countNivRev'), cPend = $('countNivPend'), cAprob = $('countNivAprob');
+      if (cTodas) cTodas.textContent = todas;
+      if (cRev) cRev.textContent = enRev;
+      if (cPend) cPend.textContent = pend;
+      if (cAprob) cAprob.textContent = aprob;
+
+      var sSmall = $('nivSmall');
+      if (sSmall) sSmall.textContent = enRev === 0 ? 'Sin nivelaciones pendientes' : enRev + ' por revisar';
+
+      var filtradas = recsList.filter(function(r){
+        if (filtroNiv === 'revision') return r.estado === 'En revisión';
+        if (filtroNiv === 'pendientes') return r.estado === 'Pendiente';
+        if (filtroNiv === 'aprobadas') return r.estado === 'Aprobada';
+        return true;
+      });
+
+      if (!filtradas.length){
+        container.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--slate);"><span class="material-symbols-outlined" style="font-size:36px;color:var(--sky-400);margin-bottom:8px;display:block;">check_circle</span><b style="font-size:14px;display:block;">No hay nivelaciones en esta categoría</b><small>Todas las materias están al día.</small></div>';
+        return;
+      }
+
+      var html = '';
+      filtradas.forEach(function(r){
+        var pillCls = r.estado === 'Aprobada' ? 'ok' : (r.estado === 'En revisión' ? 'rev' : 'pend');
+        var pillTxt = r.estado;
+        
+        var deliveryHtml = '';
+        if (r.entrega_estudiante){
+          deliveryHtml = '<div class="niv-delivery">' +
+            '<div style="font-weight:700;color:var(--navy-900);margin-bottom:4px;">Evidencias de Entrega del Estudiante:</div>' +
+            '<a href="' + (r.entrega_estudiante.enlace_archivo || '#') + '" target="_blank" rel="noopener noreferrer">' +
+              '<span class="material-symbols-outlined" style="font-size:16px;">attachment</span> ' + esc(r.entrega_estudiante.enlace_archivo || 'Ver archivo adjunto') +
+            '</a>' +
+            (r.entrega_estudiante.observaciones ? '<p style="margin-top:5px;font-style:italic;color:var(--slate);">Nota: "' + esc(r.entrega_estudiante.observaciones) + '"</p>' : '') +
+          '</div>';
+        }
+
+        var actionHtml = '';
+        if (r.estado !== 'Aprobada'){
+          actionHtml = '<div class="niv-grade-form" data-id="' + r.id + '">' +
+            '<span style="font-size:11.5px;font-weight:700;color:var(--slate);">Nota (1.0 - 5.0):</span>' +
+            '<input type="number" step="0.1" min="1.0" max="5.0" class="niv-input" placeholder="3.5" value="' + (r.nota_recuperacion || 3.5) + '" id="nota-' + r.id + '">' +
+            '<input type="text" class="niv-text" placeholder="Retroalimentación docente..." id="retro-' + r.id + '" value="' + esc(r.retroalimentacion_docente || '') + '">' +
+            '<button type="button" class="rep-btn ok" data-niv-aprobar="' + r.id + '"><span class="material-symbols-outlined">check_circle</span>Aprobar Nivelación</button>' +
+            '<button type="button" class="rep-btn no" data-niv-corregir="' + r.id + '"><span class="material-symbols-outlined">replay</span>Pedir Corrección</button>' +
+          '</div>';
+        } else {
+          actionHtml = '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;color:#166534;font-size:12px;display:flex;align-items:center;justify-content:space-between;">' +
+            '<span><strong style="font-size:13px;">Nivelación Aprobada:</strong> Nota final: <b>' + (r.nota_recuperacion || '3.5') + '/5.0</b>' + (r.retroalimentacion_docente ? ' · ' + esc(r.retroalimentacion_docente) : '') + '</span>' +
+            '<span class="material-symbols-outlined" style="color:#16a34a;">verified</span>' +
+          '</div>';
+        }
+
+        html += '<div class="niv-card" id="card-' + r.id + '">' +
+          '<div class="niv-top">' +
+            '<div>' +
+              '<div class="niv-title">' + esc(r.materia) + '</div>' +
+              '<div class="niv-meta">' + esc(r.estudiante_nombre) + ' (' + esc(r.grado || '11º') + ') · Asignada: ' + esc(r.fecha_asignacion || 'Reciente') + '</div>' +
+            '</div>' +
+            '<span class="niv-pill ' + pillCls + '">' + pillTxt + '</span>' +
+          '</div>' +
+          '<div class="niv-score-box">' +
+            '<div>Nota reprobada: <b style="color:#dc2626;">' + (r.nota_definitiva || '2.4') + '</b></div>' +
+            '<div>Mínima requerida: <b>3.0</b></div>' +
+            '<div>Fecha límite: <b>' + (r.fecha_limite || '2026-10-30') + '</b></div>' +
+          '</div>' +
+          '<div style="font-size:12.5px;color:var(--slate);margin-bottom:10px;">' +
+            '<strong>Taller / Plan:</strong> ' + esc(r.taller_titulo || r.taller_descripcion || 'Plan de mejoramiento académico') +
+          '</div>' +
+          deliveryHtml +
+          actionHtml +
+        '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    var btnNiv = $('btnNivelaciones');
+    if (btnNiv){
+      btnNiv.addEventListener('click', function(e){
+        e.preventDefault();
+        cargarNivelaciones();
+        abrirModal(mN);
+      });
+      keyOpen(btnNiv, function(){
+        cargarNivelaciones();
+        abrirModal(mN);
+      });
+    }
+
+    var nivTabs = $('nivTabs');
+    if (nivTabs){
+      nivTabs.addEventListener('click', function(e){
+        var tab = e.target && e.target.closest ? e.target.closest('.niv-tab') : null;
+        if (!tab) return;
+        nivTabs.querySelectorAll('.niv-tab').forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+        filtroNiv = tab.getAttribute('data-filtro') || 'todos';
+        renderNivelaciones();
+      });
+    }
+
+    var nivList = $('nivList');
+    if (nivList){
+      nivList.addEventListener('click', function(e){
+        var btnAprobar = e.target && e.target.closest ? e.target.closest('[data-niv-aprobar]') : null;
+        var btnCorregir = e.target && e.target.closest ? e.target.closest('[data-niv-corregir]') : null;
+        if (!btnAprobar && !btnCorregir) return;
+
+        var id = btnAprobar ? btnAprobar.getAttribute('data-niv-aprobar') : btnCorregir.getAttribute('data-niv-corregir');
+        var recIndex = recsList.findIndex(function(r){ return r.id === id; });
+        if (recIndex === -1) return;
+
+        var inputNota = $('nota-' + id);
+        var inputRetro = $('retro-' + id);
+        var notaVal = inputNota ? parseFloat(inputNota.value) || 3.5 : 3.5;
+        var retroVal = inputRetro ? inputRetro.value.trim() : '';
+
+        var nuevoEstado = btnAprobar ? 'Aprobada' : 'Pendiente';
+        if (btnAprobar && !retroVal) retroVal = 'Nivelación aprobada satisfactoriamente.';
+        if (!btnAprobar && !retroVal) retroVal = 'Por favor ajustar el taller según las observaciones y reenviar.';
+
+        fetch('/api/recuperaciones/calificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: id,
+            estado: nuevoEstado,
+            nota_recuperacion: notaVal,
+            retroalimentacion: retroVal
+          })
+        })
+        .then(function(res){ return res.json(); })
+        .then(function(res){
+          recsList[recIndex].estado = nuevoEstado;
+          recsList[recIndex].nota_recuperacion = notaVal;
+          recsList[recIndex].retroalimentacion_docente = retroVal;
+          try { localStorage.setItem(LS_REC, JSON.stringify(recsList)); } catch(e){}
+          renderNivelaciones();
+          toast(btnAprobar ? 'Nivelación aprobada: ' + recsList[recIndex].materia : 'Corrección solicitada');
+        })
+        .catch(function(){
+          // Fallback local
+          recsList[recIndex].estado = nuevoEstado;
+          recsList[recIndex].nota_recuperacion = notaVal;
+          recsList[recIndex].retroalimentacion_docente = retroVal;
+          try { localStorage.setItem(LS_REC, JSON.stringify(recsList)); } catch(e){}
+          renderNivelaciones();
+          toast(btnAprobar ? 'Nivelación aprobada (local): ' + recsList[recIndex].materia : 'Corrección solicitada');
+        });
+      });
+    }
 
     var attList = $('attList');
     if (attList) attList.addEventListener('click', function(e){
@@ -1168,6 +1411,7 @@
     actualizarContadores(pendientesDe(att));
     renderNotifs();
     renderReportes();
+    cargarNivelaciones();
   })();
 </script>
 <!-- Fresh-user / demo state (?demo=1, ?new=1 or stored flag). -->
